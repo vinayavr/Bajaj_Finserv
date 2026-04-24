@@ -242,8 +242,10 @@ app.post("/bfhl", (req, res) => {
   });
 });
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "frontend", "index.html"));
+app.get("/bfhl", (req, res) => {
+  res.json({
+    message: "BFHL API is live. Use POST /bfhl to send data."
+  });
 });
 
 const PORT = process.env.PORT || 3000;

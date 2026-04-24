@@ -314,11 +314,8 @@ C->E"></textarea>
     const status = document.getElementById("status");
     const submitBtn = document.getElementById("submitBtn");
 
-    if (window.location.protocol === "http:" || window.location.protocol === "https:") {
-      apiUrlInput.value = `${window.location.origin}/bfhl`;
-    } else {
-      apiUrlInput.value = "https://bajajfinserv-production-f753.up.railway.app/";
-    }
+    apiUrlInput.value = "https://bajajfinserv-production-f753.up.railway.app/";
+
 
     function createChips(list, className) {
       if (!list.length) {
