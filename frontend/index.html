@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRM BFHL Challenge</title>
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #f3efe6 0%, #dce7f0 100%);
+      --panel: rgba(255, 255, 255, 0.82);
+      --border: rgba(24, 41, 47, 0.12);
+      --text: #18292f;
+      --muted: #56686f;
+      --accent: #0c7c59;
+      --accent-dark: #075540;
+      --error: #b42318;
+      --shadow: 0 24px 70px rgba(24, 41, 47, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+
+    .hero {
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      padding: 22px;
+    }
+
+    .panel h2 {
+      margin: 0 0 18px;
+      font-size: 1.35rem;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(24, 41, 47, 0.14);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font: inherit;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font: inherit;
+      color: #fff;
+      background: var(--accent);
+      cursor: pointer;
+      transition: transform 0.16s ease, background 0.16s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      background: var(--accent-dark);
+    }
+
+    button:disabled {
+      cursor: wait;
+      transform: none;
+      opacity: 0.72;
+    }
+
+    .hint,
+    .status {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .status.error {
+      color: var(--error);
+    }
+
+    .response {
+      display: grid;
+      gap: 16px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.84rem;
+      margin-bottom: 8px;
+    }
+
+    .metric strong {
+      font-size: 1.25rem;
+    }
+
+    .block {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .block h3 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: rgba(12, 124, 89, 0.1);
+      color: var(--accent-dark);
+      font-size: 0.9rem;
+    }
+
+    .chip.error {
+      background: rgba(180, 35, 24, 0.11);
+      color: var(--error);
+    }
+
+    .hierarchy {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .hierarchy-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .hierarchy-header strong {
+      font-size: 1.05rem;
+    }
+
+    .tree {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.92rem;
+      color: var(--text);
+      background: #f9fbfc;
+      border-radius: 14px;
+      padding: 14px;
+      overflow: auto;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 860px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .summary {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <h1>SRM Full Stack Engineering Challenge</h1>
+      <p>Enter your node relationships, submit them to <code>/bfhl</code>, and inspect the hierarchy output in a clean format.</p>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Request Builder</h2>
+
+        <div class="field">
+          <label for="apiUrl">API URL</label>
+          <input id="apiUrl" placeholder="https://your-api-domain.com/bfhl">
+        </div>
+
+        <div class="field">
+          <label for="fullName">Full Name</label>
+          <input id="fullName" placeholder="John Doe">
+        </div>
+
+        <div class="field">
+          <label for="emailId">Email</label>
+          <input id="emailId" placeholder="john.doe@college.edu">
+        </div>
+
+        <div class="field">
+          <label for="rollNo">College Roll Number</label>
+          <input id="rollNo" placeholder="21CS1001">
+        </div>
+
+        <div class="field">
+          <label for="dob">DOB</label>
+          <input id="dob" placeholder="DD/MM/YYYY">
+        </div>
+
+        <div class="field">
+          <label for="edges">Nodes</label>
+          <textarea id="edges" placeholder="A->B
+A->C
+B->D
+C->E"></textarea>
+        </div>
+
+        <div class="actions">
+          <button id="submitBtn" onclick="submitData()">Submit</button>
+          <span class="hint">Use commas or new lines between entries.</span>
+        </div>
+
+        <p id="status" class="status"></p>
+      </section>
+
+      <section class="panel">
+        <h2>Response Viewer</h2>
+        <div id="output" class="response">
+          <p class="empty">Submit a payload to see the parsed response here.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const apiUrlInput = document.getElementById("apiUrl");
+    const output = document.getElementById("output");
+    const status = document.getElementById("status");
+    const submitBtn = document.getElementById("submitBtn");
+
+    if (window.location.protocol === "http:" || window.location.protocol === "https:") {
+      apiUrlInput.value = `${window.location.origin}/bfhl`;
+    } else {
+      apiUrlInput.value = "http://localhost:3000/bfhl";
+    }
+
+    function createChips(list, className) {
+      if (!list.length) {
+        return '<p class="empty">None</p>';
+      }
+
+      return `<div class="chips">${list.map((item) => `<span class="chip ${className}">${escapeHtml(String(item))}</span>`).join("")}</div>`;
+    }
+
+    function escapeHtml(value) {
+      return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function renderResponse(result) {
+      const hierarchies = Array.isArray(result.hierarchies) ? result.hierarchies : [];
+      const invalidEntries = Array.isArray(result.invalid_entries) ? result.invalid_entries : [];
+      const duplicateEdges = Array.isArray(result.duplicate_edges) ? result.duplicate_edges : [];
+      const summary = result.summary || {};
+
+      output.innerHTML = `
+        <div class="summary">
+          <div class="metric">
+            <span>Total Trees</span>
+            <strong>${escapeHtml(String(summary.total_trees ?? 0))}</strong>
+          </div>
+          <div class="metric">
+            <span>Total Cycles</span>
+            <strong>${escapeHtml(String(summary.total_cycles ?? 0))}</strong>
+          </div>
+          <div class="metric">
+            <span>Largest Tree Root</span>
+            <strong>${escapeHtml(String(summary.largest_tree_root ?? "")) || "-"}</strong>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3>Identity</h3>
+          <div class="chips">
+            <span class="chip">${escapeHtml(String(result.user_id ?? "")) || "user_id missing"}</span>
+            <span class="chip">${escapeHtml(String(result.email_id ?? "")) || "email_id missing"}</span>
+            <span class="chip">${escapeHtml(String(result.college_roll_number ?? "")) || "college_roll_number missing"}</span>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3>Invalid Entries</h3>
+          ${createChips(invalidEntries, "error")}
+        </div>
+
+        <div class="block">
+          <h3>Duplicate Edges</h3>
+          ${createChips(duplicateEdges, "")}
+        </div>
+
+        <div class="block">
+          <h3>Hierarchies</h3>
+          ${hierarchies.length ? hierarchies.map((item) => `
+            <div class="hierarchy">
+              <div class="hierarchy-header">
+                <strong>Root: ${escapeHtml(String(item.root ?? ""))}</strong>
+                <span>${item.has_cycle ? "Cycle detected" : `Depth: ${escapeHtml(String(item.depth ?? 0))}`}</span>
+              </div>
+              <pre class="tree">${escapeHtml(JSON.stringify(item.tree ?? {}, null, 2))}</pre>
+            </div>
+          `).join("") : '<p class="empty">No hierarchies returned.</p>'}
+        </div>
+      `;
+    }
+
+    async function submitData() {
+      const full_name = document.getElementById("fullName").value.trim();
+      const email_id = document.getElementById("emailId").value.trim();
+      const college_roll_number = document.getElementById("rollNo").value.trim();
+      const dob = document.getElementById("dob").value.trim();
+      const raw = document.getElementById("edges").value;
+      const data = raw
+        .split(/[\r\n,]+/)
+        .map((x) => x.trim())
+        .filter((x) => x.length > 0);
+      const apiUrl = apiUrlInput.value.trim();
+
+      status.className = "status";
+      status.textContent = "";
+
+      if (!apiUrl) {
+        status.className = "status error";
+        status.textContent = "Enter an API URL before submitting.";
+        return;
+      }
+
+      submitBtn.disabled = true;
+      status.textContent = "Submitting request...";
+
+      try {
+        const res = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            full_name,
+            email_id,
+            college_roll_number,
+            dob,
+            data
+          })
+        });
+
+        let result;
+
+        try {
+          result = await res.json();
+        } catch (err) {
+          throw new Error("The API did not return valid JSON.");
+        }
+
+        if (!res.ok) {
+          throw new Error(result.message || `Request failed with status ${res.status}.`);
+        }
+
+        renderResponse(result);
+        status.textContent = "Response received successfully.";
+      } catch (err) {
+        output.innerHTML = '<p class="empty">No response to display.</p>';
+        status.className = "status error";
+        status.textContent = err.message || "API Error";
+      } finally {
+        submitBtn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
